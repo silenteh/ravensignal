@@ -175,7 +175,7 @@ func (s *scanner) scan() error {
 	for {
 		// Send one packet per loop iteration until we've sent packets
 		// to all of ports [1, 65535].
-		if tcp.DstPort < 1024 {
+		if tcp.DstPort < 65535 {
 			start = time.Now()
 			tcp.DstPort++
 			if err := s.send(&eth, &ip4, &tcp); err != nil {
@@ -183,7 +183,7 @@ func (s *scanner) scan() error {
 			}
 		}
 		// Time out 5 seconds after the last packet we sent.
-		if time.Since(start) > time.Second*5 {
+		if time.Since(start) > time.Second*10 {
 			log.Printf("timed out for %v, assuming we've seen all we can", s.dst)
 			return nil
 		}

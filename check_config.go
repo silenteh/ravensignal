@@ -18,46 +18,50 @@ const (
 
 // Check defines the type of check
 type Check struct {
-	ID          string    `json:"id"`
 	Frequency   int       `json:"frequency"`
 	LastChecked time.Time `json:"last_checked"`
-	Type        CheckType `json:"type"`
+	Type        CheckType `json:"check_type"`
+}
+
+func NewCheck(frequencyMS int, checkType CheckType) Check {
+	return Check{
+		Frequency: frequencyMS,
+		Type:      checkType,
+	}
 }
 
 // Domain defines the list of domains to be checked
 type Domain struct {
-	Name  string `json:"name"`
-	Check Check  `json:"check"`
-	Hosts []Host `json:"hosts"`
+	Name   string  `json:"name"`
+	Checks []Check `json:"checks"`
+	Hosts  []Host  `json:"hosts"`
 }
 
 // Host defines which hosts in the domain to be checked
 type Host struct {
-	Name   string  `json:"name"`
-	Checks []Check `json:"checks"`
+	Name     string              `json:"name"`
+	Checks   map[CheckType]Check `json:"checks"`
+	Disabled bool                `json:"disabled"`
+	Events   Events              `json:"events"`
+}
+
+func (h *Host) ShouldScan(scanType CheckType) bool {
+	_, ok := h.Checks[scanType]
+	return ok
 }
 
 func NewHost(host string) *Host {
 	return &Host{
 		Name:   host,
-		Checks: []Check{},
+		Checks: make(map[CheckType]Check),
+		Events: []Event{},
 	}
 }
 
 func (h *Host) SetCheck(check Check) {
-	for _, existingCheck := range h.Checks {
-		if existingCheck.ID == check.ID {
-			return
-		}
-	}
-	h.Checks = append(h.Checks, check)
+	h.Checks[check.Type] = check
 }
 
 func (h *Host) RemoveCheck(check Check) {
-	for index, existingCheck := range h.Checks {
-		if existingCheck.ID == check.ID {
-
-			h.Checks = append(h.Checks[:index], h.Checks[index+1:]...)
-		}
-	}
+	delete(h.Checks, check.Type)
 }

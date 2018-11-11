@@ -10,5 +10,11 @@ func TestDNSClient(t *testing.T) {
 	client := NewDNSClient()
 	assert.NotNil(t, client)
 
-	client.Hosts("livescore.com")
+	hosts, err := client.IPV4Hosts("livescore.com")
+	assert.Nil(t, err)
+	assert.NotEmpty(t, hosts)
+
+	hosts, err = client.IPV6Hosts("livescore.com")
+	assert.Nil(t, err)
+	assert.NotEmpty(t, hosts)
 }
