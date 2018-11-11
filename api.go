@@ -16,9 +16,9 @@ type API struct {
 
 func NewApi(host, port string) *API {
 	return &API{
-		host: host,
-		port: port,
-		//router: httprouter.New(),
+		host:   host,
+		port:   port,
+		router: httprouter.New(),
 	}
 }
 
@@ -32,17 +32,14 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func (api *API) Start() {
 
-	// router := httprouter.New()
-	// router.GET("/", Index)
-	// router.GET("/hello/:name", Hello)
+	api.router.GET("/", Index)
+	api.router.GET("/hello/:name", Hello)
 
-	// hostPort := fmt.Sprintf(":%s", api.port)
-	// log.Printf("Listening to: %s", hostPort)
-	// err := http.ListenAndServe(":8080", router)
-	// log.Fatal(err)
+	hostPort := fmt.Sprintf("%s:%s", api.host, api.port)
+	log.Printf("Listening to: %s", hostPort)
+	err := http.ListenAndServe(hostPort, api.router)
+	log.Fatal(err)
 
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8181", nil))
 }
 
 func (api *API) Stop() {
