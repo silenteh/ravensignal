@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 )
@@ -65,7 +64,6 @@ func (uptime *UptimeClient) Check(checkConfig UptimeCheckConfig) *Event {
 
 	event.ScanEnd = time.Now().UTC()
 	ended := event.ScanEnd.UnixNano()
-	log.Printf("ended: %d -- started: %d\n", ended, started)
 	difference := ended - started
 	event.ResponseBody = responseString
 	event.ResponseCode = response.StatusCode
