@@ -1,13 +1,20 @@
 package main
 
-import "time"
+// This contains the various types of checks and their configuration
+
+import (
+	"log"
+	"net/http"
+	"net/url"
+	"time"
+)
 
 // CheckType the type of check
 type CheckType int
 
 const (
 	// TLSCheck checks for certificate expiration
-	TLSCheck = iota + 1
+	TLSCheck CheckType = iota + 1
 
 	// PortScanCheck checks for open ports
 	PortScanCheck
@@ -15,6 +22,32 @@ const (
 	// UptimeCheck checks whether the service is up
 	UptimeCheck
 )
+
+type UptimeCheckConfig struct {
+	method              string      // GET, HEAD, POST etc...
+	headers             http.Header // additional headers
+	url                 *url.URL    // url to check against
+	expectedStatusCodes []int       // the expected http status code
+	expectedBody        string      // the expected http body
+	followRedirects     bool        // whether the client should follow redirects
+}
+
+func NewUptimeCheckConfig(method, URL, expectedBody string, headers http.Header) UptimeCheckConfig {
+
+	parsedURL, err := url.Parse(URL)
+	if err != nil {
+		log.Println("The url is invalid", URL, err)
+	}
+	// TODO: notify the user that the URL is not valid!
+
+	return UptimeCheckConfig{
+		url:             parsedURL,
+		method:          method,
+		headers:         headers,
+		expectedBody:    expectedBody,
+		followRedirects: true,
+	}
+}
 
 // Check defines the type of check
 type Check struct {

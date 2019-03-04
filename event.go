@@ -36,8 +36,15 @@ type Event struct {
 	Error     error     `json:"error"`
 	Type      CheckType `json:"check_type"`
 	IPAddress string    `json:"ip_address"`
+
+	// Used with the port scan
 	ScanStart time.Time `json:"scan_start"`
 	ScanEnd   time.Time `json:"scan_end"`
+
+	// Used in the uptime event
+	ResponseCode      int    `json:"response_code"`
+	ResponseBody      string `json:"response_body"`
+	ResponseLatencyMS int64  `json:"response_latency"`
 }
 
 func NewEvent(err error, checkType CheckType, IPAddress string) *Event {

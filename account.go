@@ -22,9 +22,11 @@ type Account struct {
 	Users       []User `json:"users"`
 }
 
+// Go - starts to execute all the checks
 func (a *Account) Go(srcIP net.IP, srcInterface net.Interface, srcIpAddrs ipAddrs) {
 	for _, host := range a.Hosts {
 		if host.Disabled {
+			log.Println(host.Name, "is disabled, skipping checks.")
 			continue
 		}
 		for _, check := range host.Checks {

@@ -1,5 +1,7 @@
 package main
 
+// Plans should also contain various location around the world and the data retention
+
 var (
 	// kFreePlan allows for N amount of hosts to be scanned
 	kFreePlan = Plan{
